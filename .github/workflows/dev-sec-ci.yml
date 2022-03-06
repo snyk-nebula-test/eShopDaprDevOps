@@ -53,48 +53,48 @@ jobs:
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
-        args: --sarif-file-output=snyk.sarif --file=${{ inputs.projectPath }}/obj/project.assets.json --severity-threshold=medium
+        args: --sarif-file-output=snyk.sarif --file=${{ inputs.projectPath }}/${{ inputs.projectName }} --severity-threshold=medium
 
     - name: Upload result to GitHub Code Scanning
       uses: github/codeql-action/upload-sarif@v1
       with:
         sarif_file: snyk.sarif
 
-    - name: Build Image
-      run: |
-        docker build -f ${{ inputs.projectPath }}/Dockerfile -t ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }} .
+    # - name: Build Image
+    #   run: |
+    #     docker build -f ${{ inputs.projectPath }}/Dockerfile -t ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }} .
 
-      # - name: Run Snyk to push the result to Github Security for medium threshold      
-    - uses: snyk/actions/docker@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}\
-      continue-on-error: true
-      with:
-        image: ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }}
-        args: --file=${{ inputs.projectPath }}/Dockerfile --severity-threshold=medium      
+    #   # - name: Run Snyk to push the result to Github Security for medium threshold      
+    # - uses: snyk/actions/docker@master
+    #   env:
+    #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}\
+    #   continue-on-error: true
+    #   with:
+    #     image: ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }}
+    #     args: --file=${{ inputs.projectPath }}/Dockerfile --severity-threshold=medium      
 
-    - name: Upload result to GitHub Code Scanning
-      uses: github/codeql-action/upload-sarif@v1
-      with:
-        sarif_file: snyk.sarif        
+    # - name: Upload result to GitHub Code Scanning
+    #   uses: github/codeql-action/upload-sarif@v1
+    #   with:
+    #     sarif_file: snyk.sarif        
 
-    - uses: Azure/container-scan@v0 
-      name: Scan image for vulnerabilities
-      id: container-scan
-      continue-on-error: true # In real life scenario you have this to false
-      with:
-        image-name: ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }}
-        run-quality-checks: true
+    # - uses: Azure/container-scan@v0 
+    #   name: Scan image for vulnerabilities
+    #   id: container-scan
+    #   continue-on-error: true # In real life scenario you have this to false
+    #   with:
+    #     image-name: ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }}
+    #     run-quality-checks: true
 
-    - name: Push Image
-      run: |
-        sudo az acr login -n ${{ secrets.AZURE_CONTAINER_REGISTRY }} -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }}
-        sudo docker push ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }} 
+    # - name: Push Image
+    #   run: |
+    #     sudo az acr login -n ${{ secrets.AZURE_CONTAINER_REGISTRY }} -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }}
+    #     sudo docker push ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }} 
 
-    # Push it to app insights (scan results from Azure Container Scan)
-    - name: Post logs to appinsights
-      uses: Azure/publish-security-assessments@v0
-      with: 
-        scan-results-path: ${{ steps.container-scan.outputs.scan-report-path }}
-        connection-string: ${{ secrets.AZ_APPINSIGHTS_CONNECTION_STRING }}
-        subscription-token: ${{ secrets.AZ_SUBSCRIPTION_TOKEN }}         
+    # # Push it to app insights (scan results from Azure Container Scan)
+    # - name: Post logs to appinsights
+    #   uses: Azure/publish-security-assessments@v0
+    #   with: 
+    #     scan-results-path: ${{ steps.container-scan.outputs.scan-report-path }}
+    #     connection-string: ${{ secrets.AZ_APPINSIGHTS_CONNECTION_STRING }}
+    #     subscription-token: ${{ secrets.AZ_SUBSCRIPTION_TOKEN }}         
