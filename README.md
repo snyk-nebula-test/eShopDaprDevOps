@@ -12,5 +12,5 @@ This repository uses GitHub Action but you could use any CI/CD tools to achieve 
 
 Before listing the tool used in this repository here the flow that it's in place.
 
-
+![flow](./diagram/flow.png)
 
