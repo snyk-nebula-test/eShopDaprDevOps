@@ -30,7 +30,7 @@ env:
   DOTNET_VERSION: 6.0.x
 
 jobs:
-  Build-and-scan-image:
+  code-dep-scan:
     runs-on: ubuntu-latest
     steps:
     - name: 'Checkout Github Action'
@@ -98,3 +98,21 @@ jobs:
         scan-results-path: ${{ steps.container-scan.outputs.scan-report-path }}
         connection-string: ${{ secrets.AZ_APPINSIGHTS_CONNECTION_STRING }}
         subscription-token: ${{ secrets.AZ_SUBSCRIPTION_TOKEN }}         
+
+  ms-sec-devops-analysis:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Run Microsoft Security DevOps Analysis
+      uses: microsoft/security-devops-action@preview
+      id: msdo
+
+    - name: Upload alerts to Security tab
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: ${{ steps.msdo.outputs.sarifFile }}
