@@ -100,7 +100,7 @@ jobs:
         subscription-token: ${{ secrets.AZ_SUBSCRIPTION_TOKEN }}         
 
   ms-sec-devops-analysis:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-dotnet@v1
@@ -112,9 +112,6 @@ jobs:
     - name: Run Microsoft Security DevOps Analysis
       uses: microsoft/security-devops-action@preview
       id: msdo
-      with:
-        categories: secrets, code, artifacts, IaC, containers
-        languages: dotnet
 
     - name: Upload alerts to Security tab
       uses: github/codeql-action/upload-sarif@v1
