@@ -100,7 +100,7 @@ jobs:
         subscription-token: ${{ secrets.AZ_SUBSCRIPTION_TOKEN }}         
 
   ms-sec-devops-analysis:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-dotnet@v1
@@ -108,7 +108,7 @@ jobs:
         dotnet-version: |
           5.0.x
           6.0.x
-          
+
     - name: Run Microsoft Security DevOps Analysis
       uses: microsoft/security-devops-action@preview
       id: msdo
