@@ -1,0 +1,25 @@
+<mxfile host="65bd71144e">
+    <diagram id="hTYIeFAmbD4GcjK3Tn6Q" name="Page-1">
+        <mxGraphModel dx="1168" dy="782" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Build Code" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="460" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="Scan Code" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="160" y="380" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="Build container&lt;br&gt;image" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="310" y="310" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="Scan container&lt;br&gt;image" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="460" y="240" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="Push Image into&lt;br&gt;container registry" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="610" y="170" width="120" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
