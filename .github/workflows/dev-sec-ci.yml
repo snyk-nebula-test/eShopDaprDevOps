@@ -109,6 +109,10 @@ jobs:
           5.0.x
           6.0.x
 
+    - name: Build container image
+          run: |
+            docker build -f ${{ inputs.projectPath }}/Dockerfile -t ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }} .
+
     - name: Run Microsoft Security DevOps Analysis
       uses: microsoft/security-devops-action@preview
       id: msdo
