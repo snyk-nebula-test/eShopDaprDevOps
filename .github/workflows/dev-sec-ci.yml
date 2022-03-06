@@ -64,11 +64,11 @@ jobs:
       run: |
         docker build -f ${{ inputs.projectPath }}/Dockerfile -t ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }} .
 
-      # - name: Run Snyk to push the result to Github Security for medium threshold
-      continue-on-error: true
-      uses: snyk/actions/docker@master
+      # - name: Run Snyk to push the result to Github Security for medium threshold      
+    - uses: snyk/actions/docker@master
       env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}\
+      continue-on-error: true
       with:
         image: ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }}
         args: --file=${{ inputs.projectPath }}/Dockerfile --severity-threshold=medium      
