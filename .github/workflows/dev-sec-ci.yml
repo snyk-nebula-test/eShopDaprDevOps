@@ -33,7 +33,7 @@ jobs:
   code-dep-scan:
     runs-on: ubuntu-latest
     steps:
-    - name: 'Checkout Github Action'
+    - name: Checkout repo
       uses: actions/checkout@v2
 
     - name: Setup dotnet
@@ -41,7 +41,7 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Build
+    - name: Build project
       run: |
         dotnet restore ${{ inputs.projectPath }}/${{ inputs.projectName }}
         cd ${{ inputs.projectPath }}
@@ -55,7 +55,7 @@ jobs:
       with:
         args: --sarif-file-output=snyk.sarif --file=${{ inputs.projectPath }}/obj/project.assets.json --severity-threshold=medium
 
-    - name: Upload result to GitHub Code Scanning
+    - name: Upload result to GitHub Code Scanning Alerts
       uses: github/codeql-action/upload-sarif@v1
       with:
         sarif_file: snyk.sarif
@@ -63,23 +63,12 @@ jobs:
   container-scan:
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
     - name: Build container image
       run: |
-        docker build -f ${{ inputs.projectPath }}/Dockerfile -t ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }} .
-
-    # - name: Run Synk container scan     
-    #   uses: snyk/actions/docker@master
-    #   env:
-    #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-    #   continue-on-error: true
-    #   with:
-    #     image: ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }}
-    #     args: --file=${{ inputs.projectPath }}/Dockerfile --severity-threshold=medium
-
-    # - name: Upload result to GitHub code scanning
-    #   uses: github/codeql-action/upload-sarif@v1
-    #   with:
-    #     sarif_file: snyk.sarif        
+        docker build -f ${{ inputs.projectPath }}/Dockerfile -t ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }} . 
 
     # Note: Once MS Defender for DevOps goes GA with Linux this task is redundant
     - name: Run Trivy and Dockle container scan
@@ -98,7 +87,7 @@ jobs:
         connection-string: ${{ secrets.AZ_APPINSIGHTS_CONNECTION_STRING }}
         subscription-token: ${{ secrets.AZ_SUBSCRIPTION_TOKEN }}      
 
-    - name: Push Image
+    - name: Push Image to ACR
       run: |
         sudo az acr login -n ${{ secrets.AZURE_CONTAINER_REGISTRY }} -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }}
         sudo docker push ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }} 
@@ -106,15 +95,18 @@ jobs:
   cred-scan:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-dotnet@v1
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v1
       with:
         dotnet-version: |
           5.0.x
           6.0.x
           3.1.x
 
-    - name: Build
+    - name: Build project
       run: |
         dotnet restore ${{ inputs.projectPath }}/${{ inputs.projectName }}
         cd ${{ inputs.projectPath }}
@@ -125,14 +117,13 @@ jobs:
       id: msdo
       with:
         policy: microsoft
-        categories: secrets,code
 
-    - name: Upload alerts to Security tab
+    - name: Upload result to GitHub Code Scanning Alerts
       uses: github/codeql-action/upload-sarif@v1
       with:
         sarif_file: ${{ steps.msdo.outputs.sarifFile }}
 
-    - name: Upload alerts file as a workflow artifact
+    - name: Upload alerts file as workflow artifact
       uses: actions/upload-artifact@v3
       with:  
         name: alerts
