@@ -109,9 +109,17 @@ jobs:
           5.0.x
           6.0.x
 
+    - name: Build
+      run: |
+        dotnet restore ${{ inputs.projectPath }}/${{ inputs.projectName }}
+        cd ${{ inputs.projectPath }}
+        dotnet build --no-restore
+
     - name: Run Microsoft Security DevOps Analysis
       uses: microsoft/security-devops-action@preview
       id: msdo
+      with:
+        categories: secrets, code, artifacts, IaC, containers
 
     - name: Upload alerts to Security tab
       uses: github/codeql-action/upload-sarif@v1
