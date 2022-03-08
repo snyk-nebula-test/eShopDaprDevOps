@@ -40,6 +40,7 @@ try
 {
     app.Logger.LogInformation("Starting web host ({ApplicationName})...", appName);
     app.Run();
+    
 }
 catch (Exception ex)
 {
