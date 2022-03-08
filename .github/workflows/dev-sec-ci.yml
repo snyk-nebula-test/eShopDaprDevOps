@@ -106,12 +106,6 @@ jobs:
           6.0.x
           3.1.x
 
-    - name: Build project
-      run: |
-        dotnet restore ${{ inputs.projectPath }}/${{ inputs.projectName }}
-        cd ${{ inputs.projectPath }}
-        dotnet build --no-restore
-
     - name: Run Microsoft Security DevOps Analysis
       uses: microsoft/security-devops-action@preview
       id: msdo
