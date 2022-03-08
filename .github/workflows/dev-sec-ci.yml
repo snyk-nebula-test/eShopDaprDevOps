@@ -79,6 +79,11 @@ jobs:
         image-name: ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }}
         run-quality-checks: true
 
+    - name: Push Image to ACR
+      run: |
+        sudo az acr login -n ${{ secrets.AZURE_CONTAINER_REGISTRY }} -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }}
+        sudo docker push ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }} 
+
     #  Note: Once MS Defender for DevOps goes GA with Linux this task is redundant
     - name: Publish Trivy and Dockle logs to AppInsights
       uses: Azure/publish-security-assessments@v0
@@ -86,11 +91,6 @@ jobs:
         scan-results-path: ${{ steps.container-scan.outputs.scan-report-path }}
         connection-string: ${{ secrets.AZ_APPINSIGHTS_CONNECTION_STRING }}
         subscription-token: ${{ secrets.AZ_SUBSCRIPTION_TOKEN }}      
-
-    - name: Push Image to ACR
-      run: |
-        sudo az acr login -n ${{ secrets.AZURE_CONTAINER_REGISTRY }} -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }}
-        sudo docker push ${{ secrets.AZURE_CONTAINER_REGISTRY }}/${{ inputs.imageName }}:${{ github.sha }} 
 
   cred-scan:
     runs-on: windows-latest
